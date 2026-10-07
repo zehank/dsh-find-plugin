@@ -12,17 +12,29 @@ English | [中文](README.zh.md)
 > `peerDependencies: { "@deepseek-ai/dsh-tools": "^0.1.0-rc.6 || … || ^0.1.7-alpha.1" }`.
 > Every one of those ranges stops below `0.2.0`, so DSH's install preflight rejects
 > the plugin on a `0.2.0` host even though the code itself works there. The `^0.2.0-rc.1`
-> alternative added here is the **only** change needed.
+> alternative added in 0.4.1 was the **only** change needed to make it install; 0.5.0
+> then adds two host-awareness fixes.
 >
 > **What changed from upstream 0.4.0:**
 >
-> 1. `peerDependencies["@deepseek-ai/dsh-tools"]` gained `|| ^0.2.0-rc.1`.
-> 2. The `prepare` script was removed, so `dsh plugin add github:…` installs the
+> 1. *(0.4.1)* `peerDependencies["@deepseek-ai/dsh-tools"]` gained `|| ^0.2.0-rc.1`.
+> 2. *(0.4.1)* The `prepare` script was removed, so `dsh plugin add github:…` installs the
 >    committed `lib/` as-is instead of triggering a blocked build step.
-> 3. Version bumped to `0.4.1`; `repository` points at this fork.
+> 3. *(0.5.0)* **Install commands name the profile you are actually running**, read from
+>    `DSH_PROFILE`. Upstream hard-codes `--profile web`; on a Desktop build that command
+>    does not fail — it silently creates a *separate* `web` profile and installs there,
+>    leaving your app unchanged.
+> 4. *(0.5.0)* **Every result carries the DSH requirement it declares**, reduced against
+>    the running host: `✓` fine, `✗` the install gate will reject it, `?` no attributable
+>    manifest was found. Plugins with a stale peer line are now visible *before* you try.
+> 5. *(0.5.0)* Adds a `semver` runtime dependency, because correct prerelease range
+>    matching is exactly what the original rejection hinged on and is not worth
+>    re-deriving by hand.
 >
-> No source or behaviour was modified — `src/` and `lib/` are byte-identical to upstream
-> 0.4.0. See [FORK-NOTES.md](FORK-NOTES.md) for the verification evidence.
+> `data/` and `cordis.patch.yml` remain byte-identical to upstream 0.4.0. See
+> [FORK-NOTES.md](FORK-NOTES.md) for the full change list and the verification evidence,
+> including how the compat verdict was checked against the host's own
+> `evaluatePluginCompatibility`.
 
 **A plugin that finds plugins** — think [`/find-skills`](https://skills.sh) from skills.sh, for DSH.
 

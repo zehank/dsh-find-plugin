@@ -29,6 +29,8 @@ export interface RegistryPlugin {
     added: string;
     /** Present in the live registry; used as a ranking tie-breaker. */
     stars?: number;
+    /** npm package name when the curated list knows one; absent in the snapshot. */
+    npm?: string;
 }
 export interface Registry {
     updated: string;

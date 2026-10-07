@@ -17,6 +17,8 @@
  *  4. caches failures for a minute so a retry loop cannot keep burning quota.
  */
 
+import { installCommand } from './profile.ts'
+
 export interface CommunityPlugin {
   name: string
   owner: string
@@ -183,7 +185,7 @@ export async function searchGitHub(
         description: String(it.description ?? ''),
         stars: Number(it.stargazers_count ?? 0),
         pushed: String(it.pushed_at ?? ''),
-        install: `dsh plugin --profile web add github:${String(it.full_name ?? '')}`,
+        install: installCommand(`github:${String(it.full_name ?? '')}`),
       }))
       cache.set(key, { at: Date.now(), data })
       return data.slice(0, limit)
